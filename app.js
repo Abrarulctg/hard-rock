@@ -7,22 +7,32 @@
 //     displaySongs(data.data);
 // }
 
+document.getElementById("search-input")
+    .addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            document.getElementById("search-button").click();
+        }
+    });
+
+
+
 const searchSong = () => {
     const searchInput = document.getElementById('search-input').value;
     const url = `https://api.lyrics.ovh/suggest/:${searchInput}`
+    toggleSpinner()
     fetch(url)
-    .then(res => res.json())
-    .then(data => displaySongs(data.data))
+        .then(res => res.json())
+        .then(data => displaySongs(data.data))
+        .catch(error => displayError(error))
 }
 
 const displaySongs = songs => {
     const songContainer = document.getElementById('search-result');
-    
     songContainer.innerHTML = " ";
     songs.forEach(song => {
-        //console.log(song);
+        console.log(song);
         const songDiv = document.createElement('div');
-        songDiv.className="single-result row align-items-center my-3 p-3";
+        songDiv.className = "single-result row align-items-center my-3 p-3";
 
         songDiv.innerHTML = `
         <div class="col-md-4">
@@ -39,22 +49,39 @@ const displaySongs = songs => {
         </div>
         `
         songContainer.appendChild(songDiv);
+        toggleSpinner();
     });
 }
-{/* <iframe class="w-100" src="${song.preview}" frameborder="0"></iframe> */}
+{/* <iframe class="w-100" src="${song.preview}" frameborder="0"></iframe> */ }
 
 const getLyrics = (artist, title) => {
     //console.log('btn clicked');
     const url = `https://api.lyrics.ovh/v1/${artist}/${title}`
     //console.log(url);
     fetch(url)
-    .then(res => res.json())
-    .then(data => displayLyrics(data.lyrics))
+        .then(res => res.json())
+        .then(data => displayLyrics(data.lyrics))
 }
 
 
-const displayLyrics = lyrics =>{
+const displayLyrics = lyrics => {
     //console.log(lyrics);
     const lyricsDiv = document.getElementById('song-lyrics');
     lyricsDiv.innerText = lyrics;
+}
+
+const displayError = error => {
+    console.log(error);
+    const errorMessage = document.getElementById('text-danger');
+    errorMessage.innerText = error;
+
+}
+
+
+// toggle spinner
+const toggleSpinner = (show) => {
+    const spinner = document.getElementById('loading-spinner');
+    const songs = document.getElementById('search-result');
+    spinner.classList.toggle('d-none');
+    songs.classList.toggle('d-none');
 }
